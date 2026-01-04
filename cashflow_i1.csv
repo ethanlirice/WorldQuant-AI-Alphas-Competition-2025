@@ -1,0 +1,33 @@
+type,alpha_id,sharpe,fitness,turnover,returns,rationale,expression
+Original,ZMbNYQ8,2.13,1.98,0.1164,0.108,Seed Alpha,"#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / enterprise_value + 0.36 * est_fcf / enterprise_value);
+#ts_rank as a inverse cumulative density function
+#driver values are gaussian, uniform, cauchy
+alpha = ts_quantile(combined_cashflow, 57, driver = ""gaussian"");
+group_rank(alpha, industry);"
+Variation 1,akqqJ25O,1.38,0.82,0.1863,0.0651,"Operator variation: replace the Gaussian-based Gaussian quantile transform with a direct time-series rank (ts_rank). This changes how the lookback distribution is mapped into the signal, potentially affecting normalization and sensitivity to outliers.","#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / enterprise_value + 0.36 * est_fcf / enterprise_value);
+#ts_rank as a inverse cumulative density function
+alpha = ts_rank(combined_cashflow, 57, constant = 0);
+group_rank(alpha, industry);"
+Variation 2,O0EEeAjY,1.35,0.82,0.1784,0.0663,"Group normalization change: replace group_rank with group_zscore to standardize the alpha within each industry, producing a cross-sectional z-score rather than a strict ranking.","#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / enterprise_value + 0.36 * est_fcf / enterprise_value);
+#Calculate the signal, then normalize within industry using a group_zscore instead of a simple rank
+alpha = ts_quantile(combined_cashflow, 57, driver = 'gaussian');
+group_zscore(alpha, industry);"
+Variation 3,P0ddeA8w,1.34,0.72,0.2244,0.0654,Parameter modification: shorten the lookback from 57 to 36 days to capture more recent cash-flow dynamics and potentially increase turnover responsiveness.,"#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / enterprise_value + 0.36 * est_fcf / enterprise_value);
+#Tune lookback window: shorter horizon
+alpha = ts_quantile(combined_cashflow, 36, driver = 'gaussian');
+group_rank(alpha, industry);"
+Variation 4,RRnn0M8j,1.3,0.87,0.114,0.0565,Complementary operator: add a smoothing step (ts_mean with a 10-day window) before the Gaussian quantile to reduce noise and emphasize more persistent signals.,"#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / enterprise_value + 0.36 * est_fcf / enterprise_value);
+#Smoothing the combined_cashflow prior to Gaussian quantile to reduce noise
+combined_cashflow_smooth = ts_mean(combined_cashflow, 10);
+alpha = ts_quantile(combined_cashflow_smooth, 57, driver = 'gaussian');
+group_rank(alpha, industry);"
+Variation 5,E5XXomlr,1.39,0.83,0.1834,0.0651,Operator replacement: substitute division by enterprise_value with an explicit inverse operator (inverse(x) = 1/x) to represent the same arithmetic using a different operator.,"#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op * inverse(enterprise_value) + 0.36 * est_fcf * inverse(enterprise_value));
+#ts_quantile with arithmetic transformed via inverse
+alpha = ts_quantile(combined_cashflow, 57, driver = 'gaussian');
+group_rank(alpha, industry);"

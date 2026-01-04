@@ -1,0 +1,12 @@
+type,alpha_id,sharpe,fitness,turnover,returns,rationale,expression
+Original,b800V7K,2.12,2.11,0.1229,0.1237,Seed Alpha,"#Split weights across combined cash flow
+combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap);
+#ts_rank as a inverse cumulative density function
+#driver values are gaussian, uniform, cauchy
+alpha = ts_quantile(combined_cashflow, 57, driver = ""gaussian"");
+group_rank(alpha, industry);"
+Variation 1,npMMdAAq,1.32,0.86,0.1691,0.0711,"Replace the final grouping operator with group_neutralize to remove industry-level biases before ranking, ensuring the signal is interpreted within industry cohorts.","combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap); alpha = ts_quantile(combined_cashflow, 57, driver = ""gaussian""); group_neutralize(alpha, industry);"
+Variation 2,9qLLj28o,1.3,0.7,0.2322,0.0681,Lower the look-back window from 57 to 30 days to capture more recent momentum in cash-flow yields and reduce potential lag in the signal.,"combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap); alpha = ts_quantile(combined_cashflow, 30, driver = ""gaussian""); group_rank(alpha, industry);"
+Variation 3,rKvvemZ9,1.14,0.75,0.1069,0.0536,"Introduce a 10-day smoothing (ts_mean) before the quantile transform to reduce noise and stabilize the signal, potentially improving robustness.","combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap); alpha = ts_quantile(ts_mean(combined_cashflow, 10), 57, driver = ""gaussian""); group_rank(alpha, industry);"
+Variation 4,Vkgg08jw,1.28,0.86,0.1417,0.064,"Replace ts_quantile with ts_zscore to standardize the signal based on its time-series distribution, offering an alternative normalization that emphasizes deviations from the recent mean.","combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap); alpha = ts_zscore(combined_cashflow, 57); group_rank(alpha, industry);"
+Variation 5,akqqxe3w,-0.57,-0.25,0.9517,-0.1839,"Replace the grouping with group_max to amplify the strongest within-industry signals by taking the maximum alpha value among peers, yielding a more aggressive intra-industry tilt.","combined_cashflow = (0.64 * cashflow_op / cap + 0.36 * est_fcf / cap); alpha = ts_quantile(combined_cashflow, 57, driver = ""gaussian""); group_max(alpha, industry);"

@@ -1,0 +1,6 @@
+2025-11-23 12:13:07,237 - ace - ERROR - 
+Incorrect email or password
+
+2025-11-23 18:31:24,576 - ace - ERROR - Simulation failed. {'id': '2C42bBd6E4hfc1399qY3nrc', 'type': 'REGULAR', 'status': 'ERROR', 'message': 'Attempted to use inaccessible or unknown operator "generate_stats"', 'location': {'line': 9, 'start': 453, 'end': 490, 'property': 'regular'}}
+2025-11-23 18:36:05,183 - ace - ERROR - Simulation failed. {'id': '2pd7DH2mK5iWczah0ENCrAR', 'type': 'REGULAR', 'status': 'ERROR', 'message': 'Incompatible unit for input of "densify" at index 0, expected "Unit[Group:1]", found "Unit[]"', 'location': {'property': 'regular'}}
+2025-11-23 19:49:32,067 - ace - ERROR - Simulation failed. {'id': '4vhJ7N7Ey59GcCmjfAhGl7K', 'type': 'REGULAR', 'status': 'ERROR', 'message': 'Attempted to use reserved variable name: "delta"', 'location': {'line': 1, 'start': 92, 'end': 119, 'property': 'regular'}}

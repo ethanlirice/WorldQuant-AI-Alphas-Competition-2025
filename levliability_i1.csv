@@ -1,0 +1,26 @@
+type,alpha_id,sharpe,fitness,turnover,returns,rationale,expression
+Original,Gg7pvaZ,1.79,1.59,0.1222,0.0992,Seed Alpha,"liability_signal = rank(normalize(liabilities/assets));
+volatility = ts_std_dev(close, 20);
+reversal_signal = rank(-ts_delta(close, 3) / volatility);
+
+alpha = liability_signal * 0.8 + reversal_signal  * 0.2;
+/*Idea 
+In financial analysis, a company's leverage, represented by its liability-to-asset ratio, is a key indicator of its financial risk. Higher leverage, while often seen as a risk, indicates that the company has borrowed money to finance its operations and growth. However debt or liabilities is also considered a cheaper form of capital compared to equity financing, thus higher liabilities may potentially boost future profitability.
+  
+Hypothesis 
+Comparatively higher liabilities may indicate that the company has higher leverage and may have higher returns in the future.
+  
+Implementation 
+Compare liabilities among companies.
+
+Expression
+liabilities
+
+What’s next?
+Different companies have different scale of assets. Can performing a ratio analysis comparison by normalizing the liability with company assets improve Alpha performance?
+*/"
+Variation 1,rKvvLLAd,1.07,0.7,0.0488,0.0532,"Replace the cross-sectional operator on the leverage signal from rank to zscore to standardize leverage across the universe rather than ranking, which may emphasize extreme values differently.","liability_signal = zscore(normalize(liabilities/assets)); volatility = ts_std_dev(close, 20); reversal_signal = rank(-ts_delta(close, 3) / volatility); alpha = liability_signal * 0.8 + reversal_signal * 0.2;"
+Variation 2,O0EEkxrg,1.39,0.99,0.1242,0.0637,"Apply winsorization to cap extreme liabilities/assets before ranking, reducing sensitivity to outliers while preserving cross-sectional comparison.","liability_signal = rank(winsorize(liabilities/assets, std=4)); volatility = ts_std_dev(close, 20); reversal_signal = rank(-ts_delta(close, 3) / volatility); alpha = liability_signal * 0.8 + reversal_signal * 0.2;"
+Variation 3,ERROR,,,,,,"liability_signal = rank(normalize(liabilities/assets)); volatility = ts_std_dev(close, 30); reversal_signal = rank(-ts_delta(close, 5) / volatility); alpha = liability_signal * 0.8 + reversal_signal * 0.2;"
+Variation 4,FAILED,,,,,,"liability_signal = rank(normalize(liabilities/assets)); volatility = ts_std_dev(close, 20); delta = ts_delta(close, 3); delta_smooth = ts_mean(delta, 5); reversal_signal = rank(-delta_smooth / volatility); alpha = liability_signal * 0.8 + reversal_signal * 0.2;"
+Variation 5,ERROR,,,,,,"liability_signal = rank(normalize(liabilities/assets)); volatility = ts_zscore(close, 20); reversal_signal = rank(-ts_delta(close, 3) / volatility); alpha = liability_signal * 0.8 + reversal_signal * 0.2;"
